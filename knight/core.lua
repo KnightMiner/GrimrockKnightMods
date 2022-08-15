@@ -16,6 +16,29 @@ KnightMods.resources = KnightMods.folder .. "gfx/"
 -- icon sheets
 KnightMods.skillIconAtlas = KnightMods.resources .. "skills.dds"
 KnightMods.skillIcons = {
+  -- dual wield traits
+  firearm_dual_wield     =  8,
+  throwing_dual_wield    =  9,
+  heavy_dual_wield       = 10,
+  stronger_dual_wielding = 11,
+  -- throwing_mastery uses vanilla icon
+
+  -- magic trait bonuses use spell icons
+
+  -- misc traits
+  set_master = 12,
+  archmage   = 13,
+  satiated   = 15,
+
+  -- classes
+  ranger = 16,
+
+  -- racial traits
+  baker            = 14,
+  refined_palette  = 15,
+  pirate_training  = 22,
+  knowledge_keeper = 23,
+  rock_skin        = 17,
 
   -- toorum mode
   thunderstruck   = 27,

@@ -35,4 +35,21 @@ KnightMods.config = {
     -- medusa will no longer petrify, curse instead
     "km_medusa_curse",
   },
+
+
+  ---------------
+  -- Reskilled --
+  ---------------
+
+  -- list of mods to support
+  reskilled_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"}, -- TODO: look at skills
+
+  -- list of mods to support firearms dealing extra damage per level
+  reskilled_firearms_whitelist = {"Lost City", "Grimrock Unlimited"}, -- TODO: look at skills
+
+  -- If true, allows dual wielding throwing weapons. At 5th level, there is no penalty for dual wielding throwing weapons
+  reskilled_replace_double_throw = true,
+
+  -- If true, attacking from the back row is delay until 4th level for accuracy
+  reskilled_firearm_one_handed = true,
 }
