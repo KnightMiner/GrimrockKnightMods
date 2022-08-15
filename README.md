@@ -4,7 +4,7 @@ Collection of UMods for Legend of Grimrock 2
 
 ## Features
 
-TODO
+Features are covered on the [wiki tab](https://github.com/KnightMiner/GrimrockKnightMods/wiki).
 
 ## How to use
 
