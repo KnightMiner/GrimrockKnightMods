@@ -9,7 +9,7 @@ TODO
 ## How to use
 
 1. First you have to be on the new beta branch. On steam, right click the game > Properties > Betas. Add the code "ggllooeegggg" to unlock the secret "nutcracker" beta
-2. Go to "\Documents\Almost Human\legend of grimrock 2". Once the beta is downloaded, you'll see a file named "mods.cfg" and a "Mods" folder
+2. Go to `\Documents\Almost Human\legend of grimrock 2`. Once the beta is downloaded, you'll see a file named "mods.cfg" and a "Mods" folder
 3. Download KnightMods [from Github](https://github.com/KnightMiner/GrimrockKnightMods/archive/refs/heads/main.zip) 
 4. Extract the "knight" folder into the Mods folder, so it looks like `/Mods/knight/`
 5. Add the following to mods.cfg so it looks like this:
