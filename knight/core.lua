@@ -181,7 +181,7 @@ function KnightMods:isEnabledInMod(firstKey, firstWhitelist)
 
     -- global whitelist, ensures we do not break a random other mod
     list = self.config["global_mod_whitelist"]
-    return list == nil or listContains(list, name)
+    return list == nil or KnightMods.listContains(list, name)
   end
   return true
 end
