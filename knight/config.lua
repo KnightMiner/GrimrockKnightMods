@@ -63,4 +63,11 @@ KnightMods.config = {
 
   -- list of mods to accept for set bonuses
   set_bonuses_whitelist = {"Lost City", "Grimrock Unlimited"},
+
+  -- list of mods to accept for general tweaks that do not have a specific option
+  tweaks_whitelist = {"Lost City", "Grimrock Unlimited"},
+  -- mod blacklist for making the lightning rod use willpower
+  tweaks_lightning_rod_willpower_blacklist = {},
+  -- brew bullets blacklist
+  tweaks_brew_bullets_blacklist = {},
 }
