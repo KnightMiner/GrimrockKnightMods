@@ -52,4 +52,12 @@ KnightMods.config = {
 
   -- If true, attacking from the back row is delay until 4th level for accuracy
   reskilled_firearm_one_handed = true,
+
+
+  ----------
+  -- Misc --
+  ----------
+
+  -- list of mods to reject for more spells
+  more_spells_blacklist = {},
 }

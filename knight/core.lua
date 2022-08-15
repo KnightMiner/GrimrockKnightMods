@@ -45,9 +45,21 @@ KnightMods.skillIcons = {
   perspicacious   = 26,
   unresurrectable = 24,
   skill_crystals  = 25,
+
+  -- spells
+  windforce       = 0,
+  poison_storm    = 1,
+  magma_strike    = 2,
+  leechburst      = 3,
+  blizzard_spikes = 4,
 }
 KnightMods.spellIconAtlas = KnightMods.resources .. "spells.dds"
 KnightMods.spellIcons = {
+  windforce       = 0,
+  poison_storm    = 1,
+  magma_strike    = 2,
+  leechburst      = 3,
+  blizzard_spikes = 4,
 }
 KnightMods.itemIconAtlas = KnightMods.resources .. "items.dds"
 KnightMods.itemIcons = {
