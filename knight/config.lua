@@ -60,4 +60,7 @@ KnightMods.config = {
 
   -- list of mods to reject for more spells
   more_spells_blacklist = {},
+
+  -- list of mods to accept for set bonuses
+  set_bonuses_whitelist = {"Lost City", "Grimrock Unlimited"},
 }

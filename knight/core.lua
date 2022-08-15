@@ -63,6 +63,73 @@ KnightMods.spellIcons = {
 }
 KnightMods.itemIconAtlas = KnightMods.resources .. "items.dds"
 KnightMods.itemIcons = {
+  -- mirror set
+  mirror_tagelmust_set  = 20,
+  mirror_chestplate_set = 18,
+  mirror_cuisse_set     = 19,
+  mirror_greaves_set    = 21,
+  mirror_gauntlets_set  = 22,
+
+  -- rogue set
+  rogue_hood_set   = 15,
+  rogue_vest_set   = 14,
+  rogue_pants_set  = 13,
+  rogue_boots_set  = 17,
+  rogue_gloves_set = 16,
+
+  -- embalmers set
+  embalmers_headpiece_set = 3,
+  embalmers_robe_set      = 0,
+  embalmers_pants_set     = 1,
+  embalmers_boots_set     = 2,
+
+  -- makeshift set
+  makeshift_mask_set       = 5,
+  makeshift_chestplate_set = 4,
+  makeshift_legplates_set  = 6,
+  makeshift_buckler_set    = 7,
+
+  -- reed set
+  reed_helmet_set    = 10,
+  reed_cuirass_set   =  8,
+  reed_legmail_set   =  9,
+  reed_sabaton_set   = 11,
+  reed_gauntlets_set = 12,
+
+  -- have to override the default icons for classic sets as they are on sheet 1
+  -- lurker set
+  lurker_hood  = 41,
+  lurker_vest  = 40,
+  lurker_pants = 39,
+  lurker_boots = 42,
+  lurker_hood_set  = 28,
+  lurker_vest_set  = 27,
+  lurker_pants_set = 26,
+  lurker_boots_set = 29,
+
+  -- chitin set
+  chitin_mask    = 45,
+  chitin_mail    = 43,
+  chitin_cuisse  = 44,
+  chitin_greaves = 46,
+  chitin_mask_set    = 32,
+  chitin_mail_set    = 30,
+  chitin_cuisse_set  = 31,
+  chitin_greaves_set = 33,
+
+  -- valor set
+  helmet_valor    = 49,
+  cuirass_valor   = 47,
+  cuisse_valor    = 48,
+  greaves_valor   = 50,
+  gauntlets_valor = 51,
+  shield_valor    = 24,
+  helmet_valor_set    = 36,
+  cuirass_valor_set   = 34,
+  cuisse_valor_set    = 35,
+  greaves_valor_set   = 37,
+  gauntlets_valor_set = 38,
+  shield_valor_set    = 25,
 }
 
 -- gets a config value, or a default if the value is unset
