@@ -16,6 +16,12 @@ KnightMods.resources = KnightMods.folder .. "gfx/"
 -- icon sheets
 KnightMods.skillIconAtlas = KnightMods.resources .. "skills.dds"
 KnightMods.skillIcons = {
+
+  -- toorum mode
+  thunderstruck   = 27,
+  perspicacious   = 26,
+  unresurrectable = 24,
+  skill_crystals  = 25,
 }
 KnightMods.spellIconAtlas = KnightMods.resources .. "spells.dds"
 KnightMods.spellIcons = {
