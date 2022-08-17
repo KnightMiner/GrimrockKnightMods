@@ -102,6 +102,13 @@ local function defineTraits()
   		end
   	end,
   }
+  defineTrait{
+    name = "km_gardener",
+    uiName = "Gardener",
+  	icon = KnightMods.skillIcons.gardener,
+    iconAtlas = KnightMods.skillIconAtlas,
+    description = "Spices in your inventory multiply. The growth rate is determined by the number of steps taken.",
+  }
 
   -- [[ Class traits ]]--
   -- new knight trait
@@ -353,15 +360,15 @@ local function modifySkills()
     skill.traits[2] = "km_stealth"
   end
 
-  -- athletics - eat less food at lvl 4
   if isGuardians then -- guardians removes food negatives at 2 and increases health regen at 5
-    -- guardians removes alchemy bonuses, perfect place for this bonus
+    -- guardians removes alchemy bonuses, lets instead make spices more available
     skill = dungeon.skills["alchemy"]
     if skill then
-      skill.description = "A higher skill level in alchemy allows you to brew a wider range of potions using a Mortar and Pestle. At 3rd skill level, reduces food consumption by 15%. 4th and 5th skill level are required to unlock greater potions and bomb mastery."
-      skill.traits[3] = "km_satiated"
+      skill.description = "A higher skill level in alchemy allows you to brew a wider range of potions using a Mortar and Pestle. At 3rd skill level, spices multiply in your inventory. 4th and 5th skill level are required to unlock greater potions and bomb mastery."
+      skill.traits[3] = "km_gardener"
     end
   else
+    -- athletics - eat less food at lvl 4
     skill = dungeon.skills["athletics"]
     if skill then
       skill.description = skill.description .. " At 4th skill level, food consumption is reduced by 15%."
@@ -852,6 +859,36 @@ function UsableItemComponent:onUseItem(champion)
     end
   end
   return success, empty
+end
+
+-- spice multiplying
+local function updateHerbalism(champ)
+	local herbRates = {
+		["spices"] = 1173,
+		["wormroot"] = 1241,
+	}
+
+	local tilesMoved = party.go.statistics:getStat("tiles_moved")
+
+	for herb,rate in pairs(herbRates) do
+		if (tilesMoved % rate) == 0 then
+			champ:updateHerbalism2(herb)
+		end
+	end
+end
+
+-- spice multiplying
+local oldPartyMove = PartyMove.enter
+function PartyMove:enter(direction, speed, forcedMovement)
+  oldPartyMove(self, direction, speed, forcedMovement)
+
+	-- update herbalism
+	for i=1,4 do
+		local ch = party.champions[i]
+		if ch:hasTrait("km_gardener") then
+      updateHerbalism(ch)
+		end
+	end
 end
 
 --[[
