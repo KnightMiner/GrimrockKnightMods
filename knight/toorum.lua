@@ -104,7 +104,6 @@ local function toorumInit()
 					champion:setBaseStat("energy", champion:getCurrentStat("max_energy"))
 					champion:playHealingIndicator()
 				end
-				redefineObject(potion)
 			end
 		end
 	end
@@ -145,7 +144,6 @@ local function toorumInit()
 
 	  				return false
 	  			end
-	        redefineObject(medusa)
 	        break
 	      end
 	    end

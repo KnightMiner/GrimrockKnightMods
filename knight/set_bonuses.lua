@@ -33,7 +33,6 @@ local function updateSetInfo(args)
         equipComp.onRecomputeStats = args.setBonus
       end
     end
-    redefineObject(piece)
   end
 end
 
@@ -44,7 +43,6 @@ local function addGameEffect(itemName, effect)
     local itemComp = findArchComponentByClass(item, "Item")
     if itemComp then
       itemComp.gameEffect = effect
-      redefineObject(item)
     end
   end
 end

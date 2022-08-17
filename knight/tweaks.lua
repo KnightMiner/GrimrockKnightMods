@@ -37,7 +37,6 @@ local function addGameEffect(itemName, effect)
     local itemComp = findArchComponentByClass(item, "Item")
     if itemComp then
       itemComp.gameEffect = effect
-      redefineObject(item)
     end
   end
 end
@@ -68,7 +67,6 @@ local function sabreLightWeapon()
       meleeComp.attackPower = 35
       meleeComp.requirements = { "light_weapons", 4 }
     end
-    redefineObject(item)
   end
 end
 
@@ -79,7 +77,6 @@ local function hideVestCloth()
     local itemComp = findArchComponentByClass(item, "Item")
     if itemComp then
       itemComp.traits = {"chest_armor"}
-      redefineObject(item)
     end
   end
 end
@@ -91,7 +88,6 @@ local function lightningRodWillpower()
     local melee = findArchComponentByClass(item, "MeleeAttack")
     if melee then
       melee.baseDamageStat = "willpower"
-      redefineObject(item)
     end
   end
 end
@@ -104,7 +100,6 @@ local function fixFireOrb()
     if spell then
       spell.energyCost = 35
       spell.requirements = { "concentration", 3, "fire_magic", 2 }
-      redefineObject(item)
     end
   end
 end
@@ -117,7 +112,6 @@ local function quarterstaffDex()
     if meleeComp then
       meleeComp.cooldown = 3
       meleeComp.baseDamageStat = "dexterity"
-      redefineObject(item)
     end
   end
 end
@@ -131,7 +125,6 @@ local function lostCitiesBetterSmokedFish()
       local foodComp = findArchComponentByClass(item, "UsableItem")
       if foodComp then
         foodComp.nutritionValue = 375
-        redefineObject(item)
       end
     end
   end
@@ -148,7 +141,6 @@ local function missileBombs()
         name = "ammoitem",
   			ammoType = "rock",
   		}
-  		redefineObject(bombDef)
     end
   end
 end
