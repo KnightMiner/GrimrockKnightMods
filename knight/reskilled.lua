@@ -410,11 +410,10 @@ local function modifySkills()
     trait.uiName = "Light Dual Mastery"
   end
 
-
-  -- make force field concentration 4, its is quite good
+  -- make force field concentration 3, its is quite good
   local spell = dungeon.spells["force_field"]
   if spell then
-    spell.requirements = { "concentration", 4 }
+    spell.requirements = { "concentration", 3 }
   end
 end
 
