@@ -278,6 +278,15 @@ local function defineTraits()
     description = "Unlike your fellow Ratlings, you appreciate the unique flavor of the food you eat. Gain +3 health for every unique food eaten.",
   }
 
+  defineTrait{
+    name = "km_poison_affinity",
+    uiName = "Poison Affinity",
+  	icon = 56,
+    charGen = true,
+    requiredRace = "lizardman",
+    description = "Instead of being hurt by poison, it heals you. The amount of healing is determined by the poison resistance stat.",
+  }
+
   -- TODO: 2 more global traits?
 end
 
@@ -403,6 +412,11 @@ local function modifySkills()
   trait = dungeon.traits["improved_dual_wield"]
   if trait then
     trait.uiName = "Light Dual Mastery"
+  end
+  -- replace poison immunity with poison affinity
+  trait = dungeon.traits["poison_immunity"]
+  if trait then
+    trait.charGen = false
   end
 
   -- make force field concentration 3, its is quite good
@@ -896,6 +910,32 @@ function PartyMove:enter(direction, speed, forcedMovement)
       end
     end
   end
+end
+
+-- poison infinity: make champion heal from poison
+local oldChampionDamage = Champion.damage
+function Champion:damage(dmg, damageType)
+  if damageType == "poison" and self:hasTrait("km_poison_affinity") then
+    if self:isAlive() and not self:hasCondition("petrified") then
+      local resist = self:getResistance("poison")
+			local healing = math.floor(dmg * resist / 100 + 0.5)
+      if healing > 0 then
+        self:regainHealth(healing)
+        self:playHealingIndicator()
+      end
+    end
+  else
+    return oldChampionDamage(self, dmg, damageType)
+  end
+end
+
+-- poison affinity: champion is no longer immune to poison
+local oldChampionImmuneTo = Champion.isImmuneTo
+function Champion:isImmuneTo(effect)
+  if effect == "posion" and self:hasTrait("km_poison_affinity") then
+    return false
+  end
+  return oldChampionImmuneTo(self, effect)
 end
 
 --[[
