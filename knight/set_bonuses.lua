@@ -11,7 +11,9 @@ local function updateSetInfo(args)
   if piece then
     local itemComp = findArchComponentByClass(piece, "Item")
     if itemComp then
-      if args.set then itemComp.armorSet = set end
+      if args.set then
+        itemComp.armorSet = args.set
+      end
       -- icons
       if args.replaceIcon then
         itemComp.gfxIndex = KnightMods.itemIcons[args.name]
