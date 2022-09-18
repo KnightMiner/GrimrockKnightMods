@@ -806,11 +806,6 @@ else
   PartyComponent._autoSerialize = Set(keys)
 end
 
-local BREADS = {}
-for _, name in ipairs({"pitroot_bread", "bread"}) do
-  BREADS[name] = true
-end
-
 -- clone of the vanilla method but with sounds for human and minotaur
 local function consumePreferredFood(champion)
   champion.healthiness = champion.healthiness + 1
@@ -848,7 +843,7 @@ function UsableItemComponent:onUseItem(champion)
   local name = self.go.arch.name
   local success, empty = oldOnConsumeFood(self, champion)
   if success then
-    if champion:hasTrait("km_baker") and BREADS[name] then
+    if champion:hasTrait("km_baker") and (name == "bread" or name == "pitroot_bread") then
       consumePreferredFood(champion)
     end
   end
