@@ -30,24 +30,21 @@ local function defineTraits()
     -- hardcoded skill
   }
   defineTrait{
-    name = "km_heavy_dual_wield",
-    uiName = "Dual Heavy",
-    icon = KnightMods.skillIcons.heavy_dual_wield,
+    name = "km_heavy_crit",
+    uiName = "Heavy Strike",
+    icon = KnightMods.skillIcons.heavy_crit,
     iconAtlas = KnightMods.skillIconAtlas,
-    description = "You can dual wield a heavy weapon with a non-heavy weapon.",
-    -- hardcoded skill
+    description = "Heavy weapons have an extra 10% chance to score a critical hit.",
+    onComputeCritChance = function(champion, weapon, attack, attackType, level)
+      if level > 0 and attackType == "melee" and weapon:hasTrait("heavy_weapon") then return 10 end
+    end
   }
-  -- improved throwing dual wielding cancels out the penalty, do not want to deal more damage when dual wielding throwing
-  local strongerDescription = "Increases the power of dual wielding attacks by 20%."
-  if KnightMods:getConfig("reskilled_delay_reach", false) then
-    strongerDescription = strongerDescription .. " Does not affect throwing weapons if you also have improved throwing dual wielding."
-  end
   defineTrait{
-    name = "km_stronger_dual_wielding",
-    uiName = "Stronger Dual Wielding",
-    icon = KnightMods.skillIcons.stronger_dual_wielding,
+    name = "km_heavy_specialist",
+    uiName = "Heavy Specialist",
+    icon = KnightMods.skillIcons.heavy_specialist,
     iconAtlas = KnightMods.skillIconAtlas,
-    description = strongerDescription,
+    description = "Heavy weapon special attacks charge up 25% faster.",
     -- hardcoded skill
   }
 
@@ -331,15 +328,15 @@ local function modifySkills()
   -- heavy - dual wielding
   skill = dungeon.skills["heavy_weapons"]
   if skill then
-    skill.description = "Increases damage of Heavy Weapons by 20% for each skill point. At 3rd skill level, you can dual wield a heavy weapon with another weapon. At 5th skill level you can wield two-handed weapons in one hand."
-    skill.traits[3] = "km_heavy_dual_wield"
+    skill.description = "Increases damage of Heavy Weapons by 20% for each skill point. At 3rd skill level, heavy weapons have an extra 10% critical hit chance. At 5th skill level you can wield two-handed weapons in one hand."
+    skill.traits[3] = "km_heavy_crit"
   end
 
-  -- accuracy - dual wielding boost
+  -- accuracy - heavy specialist
   skill = dungeon.skills["accuracy"]
   if skill then
-    skill.description = skill.description .. " At 4th skill level attacks from dual wielding deal 20% more damage."
-    skill.traits[4] = "km_stronger_dual_wielding"
+    skill.description = skill.description .. " At 3rd skill level Heavy Weapon special attacks charge 25% faster."
+    skill.traits[3] = "km_heavy_specialist"
   end
 
   -- dodge: +5 evasion per level, new stealth trait
@@ -559,9 +556,6 @@ local function canDualWield(champion, weapon)
   if weapon:hasTrait("light_weapon") then
     return champion:hasTrait("dual_wield")
   end
-  if weapon:hasTrait("heavy_weapon") then
-    return champion:hasTrait("km_heavy_dual_wield")
-  end
   if weapon:hasTrait("throwing_weapon") then
     return champion:hasTrait("km_throwing_dual_wield")
   end
@@ -583,17 +577,12 @@ function Champion:isDualWielding()
   end
 
   -- if we have either of our traits, need to override logic
-  if self:hasTrait("km_firearm_dual_wield") or self:hasTrait("km_throwing_dual_wield") or self:hasTrait("km_heavy_dual_wield") then
+  if self:hasTrait("km_firearm_dual_wield") or self:hasTrait("km_throwing_dual_wield") then
 		local weapon1 = self:getItem(ItemSlot.Weapon)
 		local weapon2 = self:getItem(ItemSlot.OffHand)
     if weapon1 and weapon2 and canDualWield(self, weapon1) and canDualWield(self, weapon2) then
-      -- no heavy + heavy dual wielding. Heavy can only dual wield with a non-heavy weapon
-      if weapon1:hasTrait("heavy_weapon") and weapon2:hasTrait("heavy_weapon") then
-        return false
-      end
       -- melee weapon rules: must either have a dagger in one hand, or have the improved light weapon dual wielding
-      if (weapon1:hasTrait("light_weapon") or weapon1:hasTrait("heavy_weapon"))
-          and (weapon2:hasTrait("light_weapon") or weapon2:hasTrait("heavy_weapon")) then
+      if weapon1:hasTrait("light_weapon") and weapon2:hasTrait("light_weapon") then
         return self:hasTrait("improved_dual_wield") or weapon1:hasTrait("dagger") or weapon2:hasTrait("dagger")
       end
       -- cannot dual wield throwing with throwing unless replacing the double throw trait
@@ -621,9 +610,6 @@ function KnightMods.modifyAttackStats(champion, weapon, attack, power, mod)
         else
           power = power / 0.6
         end
-      -- implementation of stronger dual wield trait
-      elseif champion:hasTrait("km_stronger_dual_wielding") then
-        power = power * 1.20
       end
     end
 
@@ -701,9 +687,14 @@ local function twoHandedGuns()
   end
 end
 
+-- hack: no champion parameter to melee attack buildup, so store it from the draw method
+local lastChampionIndex = -1
 local oldAttackFrameDraw = AttackFrame.drawItemSlot
 function AttackFrame:drawItemSlot(x, y, width, height, slot)
+  -- store the champion to reduce cooldown time
+  lastChampionIndex = self.championIndex
   oldAttackFrameDraw(self, x, y, width, height, slot)
+  lastChampionIndex = -1
 
   -- draw firearm ammo count
   if findAmmo then
@@ -717,6 +708,16 @@ function AttackFrame:drawItemSlot(x, y, width, height, slot)
       end
     end
   end
+end
+
+-- reduce heavy weapon cooldown time
+local oldBuildup = MeleeAttackComponent.getBuildup
+function MeleeAttackComponent:getBuildup()
+  local buildupTime = oldBuildup(self)
+  if lastChampionIndex ~= -1 and party.champions[lastChampionIndex]:hasTrait("km_heavy_specialist") and self.go.item:hasTrait("heavy_weapon") then
+    buildupTime = buildupTime * 0.75
+  end
+  return buildupTime
 end
 
 --[[
@@ -901,17 +902,25 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
   end
   if oldVersion < 2 then
     KnightMods.redefineName("repeater")
-    if KnightMods:isModLoaded("The Guardians") then
-      for i=1,4 do
-        local ch = party.champions[i]
-        if ch:hasTrait("km_gardener") then
-          ch:removeTrait("km_gardener")
-        end
+    for i=1,4 do
+      local ch = party.champions[i]
+      ch:removeTrait("km_gardener")
+      ch:removeTrait("km_heavy_dual_wield")
+      ch:removeTrait("km_stronger_dual_wielding")
 
+      if KnightMods:isModLoaded("The Guardians") then
         local alchemy = ch:getNaturalSkillLevel("alchemy")
         if alchemy >= 3 then
           ch:addTrait("km_fullblood")
         end
+      end
+      local heavy = ch:getNaturalSkillLevel("heavy_weapons")
+      if heavy >= 3 then
+        ch:addTrait("km_heavy_crit")
+      end
+      local accuracy = ch:getNaturalSkillLevel("accuracy")
+      if accuracy >= 3 then
+        ch:addTrait("km_heavy_specialist")
       end
     end
   end

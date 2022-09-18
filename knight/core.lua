@@ -19,8 +19,8 @@ KnightMods.skillIcons = {
   -- dual wield traits
   firearm_dual_wield     =  8,
   throwing_dual_wield    =  9,
-  heavy_dual_wield       = 10,
-  stronger_dual_wielding = 11,
+  heavy_crit             = 10,
+  heavy_specialist       = 11,
   -- throwing_mastery uses vanilla icon
 
   -- magic trait bonuses use spell icons
