@@ -269,8 +269,8 @@ local function defineTraits()
   	end,
   }
   defineTrait{
-  	name = "km_refined_palette",
-  	uiName = "Refined Palette",
+  	name = "km_refined_palate",
+  	uiName = "Refined Palate",
   	icon = KnightMods.skillIcons.refined_palette,
     iconAtlas = KnightMods.skillIconAtlas,
   	charGen = true,
@@ -805,7 +805,7 @@ function UsableItemComponent:onUseItem(champion)
   local value = self.nutritionValue
   local name = self.go.arch.name
   local success, empty = oldOnConsumeFood(self, champion)
-  if success and self.nutritionValue and champion:hasTrait("km_refined_palette") then
+  if success and self.nutritionValue and champion:hasTrait("km_refined_palate") then
     local key = "km_refined_palette" .. champion.ordinal
     if not _G.party[key] then
       _G.party[key] = {}
@@ -934,6 +934,11 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
       ch:removeTrait("km_heavy_dual_wield")
       ch:removeTrait("km_stronger_dual_wielding")
       ch:removeTrait("km_quick_shot")
+      
+      if ch:hasTrait("km_refined_palette") then
+        ch:removeTrait("km_refined_palette")
+        ch:addTrait("km_refined_palate")
+      end
 
       if KnightMods:isModLoaded("The Guardians") then
         local alchemy = ch:getNaturalSkillLevel("alchemy")
