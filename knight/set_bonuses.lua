@@ -48,21 +48,30 @@ local function addGameEffect(itemName, effect)
 end
 
 local function moreSetBonusesInit()
+  local isGuardians = KnightMods:isModLoaded("The Guardians")
+
     -- full mirror set: +10 resist all, +25 energy
     updateSetInfo{name = "mirror_tagelmust"}
     updateSetInfo{name = "mirror_cuisse"}
     updateSetInfo{name = "mirror_greaves"}
     updateSetInfo{name = "mirror_gauntlets"}
+  if isGuardians then
+    updateSetInfo{name = "mirror_chestplate"}
+  else
     updateSetInfo{
       name = "mirror_chestplate",
       gameEffect = "Set Bonus: 80% Spell Energy Cost",
     }
+  end
 
     -- full rogue set +10 evasion
     updateSetInfo{name = "rogue_hood"}
     updateSetInfo{name = "rogue_pants"}
     updateSetInfo{name = "rogue_boots"}
     updateSetInfo{name = "rogue_gloves"}
+  if isGuardians then
+    updateSetInfo{name = "rogue_vest"}
+  else
     updateSetInfo{
       name = "rogue_vest",
       gameEffect = "Set Bonus: +10 Evasion",
@@ -72,11 +81,15 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- embalmers set - +50 health
     updateSetInfo{name = "embalmers_headpiece", set = "embalmers"}
     updateSetInfo{name = "embalmers_pants",     set = "embalmers"}
     updateSetInfo{name = "embalmers_boots",     set = "embalmers"}
+  if isGuardians then
+    updateSetInfo{name = "embalmers_robe"}
+  else
     updateSetInfo{
       name = "embalmers_robe",
       set = "embalmers",
@@ -88,21 +101,29 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- makeshift - +25 energy
     updateSetInfo{name = "makeshift_buckler", set = "makeshift"}
     updateSetInfo{name = "makeshift_mask"}
     updateSetInfo{name = "makeshift_legplates"}
+  if isGuardians then
+    updateSetInfo{name = "makeshift_chestplate"}
+  else
     updateSetInfo{
       name = "makeshift_chestplate",
       gameEffect = "Set Bonus: +20% Spell Damage",
     }
+  end
 
     -- reed - +5 dex
     updateSetInfo{name = "reed_legmail"}
     updateSetInfo{name = "reed_helmet"}
     updateSetInfo{name = "reed_sabaton"}
     updateSetInfo{name = "reed_gauntlets"}
+  if isGuardians then
+    updateSetInfo{name = "reed_cuirass"}
+  else
     updateSetInfo{
       name = "reed_cuirass",
       gameEffect = "Set Bonus: +5 Dexterity",
@@ -112,11 +133,15 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- lurker set: +10 evasion (that is, 1.5x evasion)
     updateSetInfo{name = "lurker_pants", replaceIcon = true}
     updateSetInfo{name = "lurker_hood",  replaceIcon = true}
     updateSetInfo{name = "lurker_boots", replaceIcon = true}
+  if isGuardians then
+    updateSetInfo{name = "lurker_vest"}
+  else
     updateSetInfo{
       name = "lurker_vest",
       replaceIcon = true,
@@ -127,11 +152,15 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- chitin set: 15% faster cooldowns (like insectoids)
     updateSetInfo{name = "chitin_cuisse",  replaceIcon = true}
     updateSetInfo{name = "chitin_greaves", replaceIcon = true}
     updateSetInfo{name = "chitin_mask",    replaceIcon = true}
+  if isGuardians then
+    updateSetInfo{name = "chitin_mail", replaceIcon = true}
+  else
     updateSetInfo{
       name = "chitin_mail",
       replaceIcon = true,
@@ -142,6 +171,7 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- valor set: +5 strength
     updateSetInfo{name = "greaves_valor",   replaceIcon = true}
@@ -149,6 +179,9 @@ local function moreSetBonusesInit()
     updateSetInfo{name = "helmet_valor",    replaceIcon = true}
     updateSetInfo{name = "cuisse_valor",    replaceIcon = true}
     updateSetInfo{name = "shield_valor",    replaceIcon = true}
+  if isGuardians then
+    updateSetInfo{name = "cuirass_valor", replaceIcon = true}
+  else
     updateSetInfo{
       name = "cuirass_valor",
       replaceIcon = true,
@@ -160,11 +193,14 @@ local function moreSetBonusesInit()
         end
       end,
     }
+  end
 
     -- add set bonus descriptions to base armors
+  if not isGuardians then
     addGameEffect("crystal_cuirass", "Set Bonus: +75 Health")
     addGameEffect("meteor_cuirass", "Set Bonus: Immune to Fire")
     addGameEffect("archmage_mantle", "Set Bonus: +50 Energy")
+  end
 end
 
 -- Implement makeshift set bonus
@@ -201,7 +237,8 @@ local oldUpdateSaveData = KnightMods.updateSaveData
 function KnightMods.updateSaveData(oldVersion, newVersion)
   oldUpdateSaveData(oldVersion, newVersion)
 
-  if oldVersion < 1 and KnightMods:isEnabledInMod("set_bonuses_whitelist", true) then
+  if KnightMods:isEnabledInMod("set_bonuses_whitelist", true)
+      and oldVersion < (KnightMods:isModLoaded("The Guardians") and 2 or 1) then
     -- mirror set
     KnightMods.redefineName("mirror_tagelmust")
     KnightMods.redefineName("mirror_cuisse")
