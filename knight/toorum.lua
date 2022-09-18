@@ -132,6 +132,7 @@ local function toorumInit()
 	                    if champion:hasTrait("km_medusa_curse") then
 	  										champion:setCondition("cursed", true)
 												champion:setCondition("slow", true)
+												champion:setCondition("paralyzed", true)
 	                    else
 	  										champion:setCondition("petrified", true)
 	                    end
