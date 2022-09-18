@@ -29,7 +29,9 @@ KnightMods.skillIcons = {
   set_master = 12,
   archmage   = 13,
   satiated   = 15,
-  gardener   = 18,
+
+  -- guardians
+  fullblood  = 19,
 
   -- classes
   ranger = 16,

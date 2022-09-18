@@ -1,12 +1,6 @@
 -- Contains improvements to champion skills and traits
 KnightMods:_addModule("reskilled", "1.0")
 
--- dungeons that get skill replacements enabled
-local SUPPORTED_DUNGEONS = {
-  ["Lost City"] = true,
-  ["Grimrock Unlimited"] = true,
-}
-
 --[[
   Defines all traits for this module
 ]]
@@ -102,12 +96,13 @@ local function defineTraits()
   		end
   	end,
   }
+  -- guardians features
   defineTrait{
-    name = "km_gardener",
-    uiName = "Gardener",
-  	icon = KnightMods.skillIcons.gardener,
+    name = "km_fullblood",
+    uiName = "Fullblood Alchemist",
+    icon = KnightMods.skillIcons.fullblood,
     iconAtlas = KnightMods.skillIconAtlas,
-    description = "Spices in your inventory multiply. The growth rate is determined by the number of steps taken.",
+    description = "Blooddrops in your inventory multiply based on steps taken. If you are an alchemist, they multiply faster.",
   }
 
   -- [[ Class traits ]]--
@@ -364,8 +359,8 @@ local function modifySkills()
     -- guardians removes alchemy bonuses, lets instead make spices more available
     skill = dungeon.skills["alchemy"]
     if skill then
-      skill.description = "A higher skill level in alchemy allows you to brew a wider range of potions using a Mortar and Pestle. At 3rd skill level, spices multiply in your inventory. 4th and 5th skill level are required to unlock greater potions and bomb mastery."
-      skill.traits[3] = "km_gardener"
+      skill.description = "A higher skill level in alchemy allows you to brew a wider range of potions using a Mortar and Pestle. At 3rd skill level, blooddrops multiply in your inventory."
+      skill.traits[3] = "km_fullblood"
     end
   else
     -- athletics - eat less food at lvl 4
@@ -861,34 +856,23 @@ function UsableItemComponent:onUseItem(champion)
   return success, empty
 end
 
--- spice multiplying
-local function updateHerbalism(champ)
-	local herbRates = {
-		["spices"] = 1173,
-		["wormroot"] = 1241,
-	}
-
-	local tilesMoved = party.go.statistics:getStat("tiles_moved")
-
-	for herb,rate in pairs(herbRates) do
-		if (tilesMoved % rate) == 0 then
-			champ:updateHerbalism2(herb)
-		end
-	end
-end
-
--- spice multiplying
+-- extra herb multiplying
 local oldPartyMove = PartyMove.enter
 function PartyMove:enter(direction, speed, forcedMovement)
   oldPartyMove(self, direction, speed, forcedMovement)
 
-	-- update herbalism
-	for i=1,4 do
-		local ch = party.champions[i]
-		if ch:hasTrait("km_gardener") then
-      updateHerbalism(ch)
-		end
-	end
+  -- update herbalism
+  local tilesMoved = party.go.statistics:getStat("tiles_moved")
+  -- this will double the rate of alchemist, so it happens every 425 step
+  -- for non-alchemists, same rate as alchemists but different timing
+  if (tilesMoved % 850) == 425 then
+  for i=1,4 do
+    local ch = party.champions[i]
+      if ch:hasTrait("km_fullblood") then
+        ch:updateHerbalism2("blooddrop_cap")
+      end
+    end
+  end
 end
 
 --[[
@@ -910,4 +894,23 @@ function Dungeon:loadInitFile()
   modifySkills()
   modifyClasses()
   twoHandedGuns()
+end
+
+
+-- called on game load to update save data
+local oldUpdateSaveData = KnightMods.updateSaveData
+function KnightMods.updateSaveData(oldVersion, newVersion)
+  if oldVersion < 2 and KnightMods:isModLoaded("The Guardians") then
+    for i=1,4 do
+      local ch = party.champions[i]
+      if ch:hasTrait("km_gardener") then
+        ch:removeTrait("km_gardener")
+      end
+
+      local alchemy = ch:getNaturalSkillLevel("alchemy")
+      if alchemy >= 3 then
+        ch:addTrait("km_fullblood")
+      end
+    end
+  end
 end
