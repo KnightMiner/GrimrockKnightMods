@@ -5,7 +5,7 @@
 -- Base class
 KnightMods = class()
 
-local SAVE_DATA_VERSION = 1
+local SAVE_DATA_VERSION = 2
 
 -- Table of versions for each submod
 KnightMods.versions = { ['core'] = "1.0" }

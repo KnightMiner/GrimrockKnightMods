@@ -70,4 +70,7 @@ KnightMods.config = {
   tweaks_lightning_rod_willpower_blacklist = {},
   -- brew bullets blacklist
   tweaks_brew_bullets_blacklist = {},
+
+  -- list of mods to accept for general tweaks that do not have a specific option
+  tweaks_fix_fire_orb_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"},
 }

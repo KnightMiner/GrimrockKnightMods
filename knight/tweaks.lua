@@ -248,10 +248,12 @@ function Dungeon:loadInitFile()
     wandDescriptions()
     sabreLightWeapon()
     hideVestCloth()
-    fixFireOrb()
     quarterstaffDex()
     lostCitiesBetterSmokedFish()
     missileBombs()
+  end
+  if KnightMods:isEnabledInMod("tweaks_fix_fire_orb_whitelist", true) then
+    fixFireOrb()
   end
 
   if KnightMods:isEnabledInMod("tweaks_lightning_rod_willpower_blacklist", false) then
@@ -289,5 +291,8 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
 
     -- lost cities
     KnightMods.redefineName("smoked_bass")
+  end
+  if oldVersion == 1 and KnightMods:isModLoaded("The Guardians") then
+    KnightMods.redefineName("zhandul_orb")
   end
 end
