@@ -133,7 +133,8 @@ local function defineTraits()
     name = "km_stealth",
     uiName = "Stealth",
     icon = 104,
-    description = "Doubles evasion bonus of equipped cloak. Shields grant +50% evasion.",
+    description = "Doubles evasion bonus of equipped clothes",
+    hidden = true,
   }
   defineTrait{
     name = "km_archmage",
@@ -349,14 +350,13 @@ local function modifySkills()
   -- dodge: +5 evasion per level, new stealth trait
   skill = dungeon.skills["dodge"]
   if skill then
-    skill.description = "Increases evasion by 5 for each skill point. At 2nd skill level, doubles the evasion bonus of the equipped cloak and makes shields 50% more effective. At 3rd skill level, the cooldown period for all of your actions is decreased by 10%."
+    skill.description = "Increases evasion by 5 for each skill point. At 3rd skill level, the cooldown period for all of your actions is decreased by 10%."
     if isGuardians then
       skill.description = skill.description .. " At 5th skill level, you have a 40% chance of evading elemental damage."
     end
     skill.onRecomputeStats = function(champion, level)
       champion:addStatModifier("evasion", level*5)
     end
-    skill.traits[2] = "km_stealth"
   end
 
   if isGuardians then -- guardians removes food negatives at 2 and increases health regen at 5
@@ -432,6 +432,7 @@ local function defineClasses()
   defineCharClass{
     name = "km_ranger",
     uiName = "Ranger",
+    traits = { "km_stealth" },
     optionalTraits = 2,
   }
   defineTrait{
@@ -442,7 +443,8 @@ local function defineClasses()
     description = "As a ranger, you specialize in blending in with your surroundings and striking without being seen.",
     gameEffect = [[
     - Health 55 (+7 per level), Energy 35 (+4 per level)
-    - Dexterity +1 per level.]],
+    - Dexterity +1 per level.
+    - Evasion from equipped clothes is doubled.]],
     onRecomputeStats = function(champion, level)
       if level > 0 then
         level = champion:getLevel()
@@ -769,11 +771,10 @@ local oldEquipmentRecomputeStats = EquipmentItemComponent.recomputeStats
 function EquipmentItemComponent:recomputeStats(champion, slot)
   if not self.enabled then return end
   if self.evasion and self.evasion > 0 and champion:hasTrait("km_stealth") and self:isEquipped(champion, slot) then
-    if self.go.item:hasTrait("cloak") then
+    local item = self.go.item
+    if item:hasTrait("cloak") or item:hasTrait("helmet") or item:hasTrait("chest_armor")
+      or item:hasTrait("leg_armor") or item:hasTrait("boots") or item:hasTrait("gloves") then
       champion.stats.evasion.current = champion.stats.evasion.current + self.evasion
-    end
-    if self.go.item:hasTrait("shield") then
-      champion.stats.evasion.current = champion.stats.evasion.current + self.evasion/2
     end
   end
   oldEquipmentRecomputeStats(self, champion, slot)
@@ -974,10 +975,14 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
       ch:removeTrait("km_heavy_dual_wield")
       ch:removeTrait("km_stronger_dual_wielding")
       ch:removeTrait("km_quick_shot")
-      
+
       if ch:hasTrait("km_refined_palette") then
         ch:removeTrait("km_refined_palette")
         ch:addTrait("km_refined_palate")
+      end
+      ch:removeTrait("km_stealth")
+      if ch:getClass() == "km_ranger" then
+        ch:addTrait("km_stealth")
       end
 
       if KnightMods:isModLoaded("The Guardians") then
