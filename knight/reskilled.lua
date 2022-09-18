@@ -637,8 +637,9 @@ function KnightMods.modifyAttackStats(champion, weapon, attack, power, mod)
 end
 
 -- finds ammo slot index, returns size and slot if found
+local findAmmo = nil
 if KnightMods:getConfig("reskilled_firearm_one_handed", true) then
-  local function findAmmo(champion, ammoType)
+  findAmmo = function(champion, ammoType)
     for i=1,ItemSlot.MaxSlots do
       local ammo = champion:getItem(i)
     	if ammo then ammo = ammo.go.ammoitem end
@@ -695,6 +696,24 @@ local function twoHandedGuns()
       if itemComp then
         itemComp.traits = {"firearm", "two_handed"}
         redefineObject(item)
+      end
+    end
+  end
+end
+
+local oldAttackFrameDraw = AttackFrame.drawItemSlot
+function AttackFrame:drawItemSlot(x, y, width, height, slot)
+  oldAttackFrameDraw(self, x, y, width, height, slot)
+
+  -- draw firearm ammo count
+  if findAmmo then
+    local champion = party.champions[self.championIndex]
+    local item = champion:getItem(slot)
+    if item then
+      local firearmAttack = item.go.firearmattack
+      if firearmAttack then
+        local slot, count = findAmmo(champion, firearmAttack.ammo)
+        gui:drawTextAligned(tostring(count), x + 64, y + 63 + math.floor((height - 75)/2), "right", FontType.PalatinoTiny)
       end
     end
   end
