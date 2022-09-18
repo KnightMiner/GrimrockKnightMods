@@ -41,7 +41,45 @@ local function addGameEffect(itemName, effect)
   end
 end
 
--- make sabre a light weapon
+-- allow evasion and protection to work on projectiles
+KnightMods:enableIntrusiveHook("modifyProjectileDamage")
+local oldModifyProjectileDamage = KnightMods.modifyProjectileDamage
+function KnightMods.modifyProjectileDamage(item, target, dmg, crit, directTarget)
+  local dmg, msg = oldModifyProjectileDamage(item, target, dmg, crit, directTarget)
+  if target.party then
+    -- chance to dodge
+    -- assuming accuracy of 35
+    local tohit = math.clamp(95 - (directTarget:getEvasion() or 0), 5, 95)
+    if math.random() > tohit / 100 then
+      return false
+    end
+
+    -- choose body part to attack (chest 31%, head 22%, legs 25%, feet 22%)
+    local r = math.random(1, 100)
+    local bodySlot
+    if r <= 31 then
+      bodySlot = ItemSlot.Chest
+    elseif r <= 31+22 then
+      bodySlot = ItemSlot.Head
+    elseif r <= 31+22+25 then
+      bodySlot = ItemSlot.Legs
+    else
+      bodySlot = ItemSlot.Feet
+    end
+
+    -- damage reduction
+    local protection = directTarget:getProtectionForBodyPart(bodySlot)
+    if item.projectilePierce then protection = math.max(protection - item.projectilePierce, 0) end
+    -- prevent protection from being too good, by only reducing half of prot
+    -- since most monsters are probably balanced around 0 prot
+    if protection > 0 then dmg = computeDamageReduction(dmg, protection / 2) end
+    dmg = math.floor(dmg)
+  end
+
+  return dmg, msg
+end
+
+-- add special effect descriptions to wands
 local function wandDescriptions()
   addGameEffect("zhandul_orb", "Intense Fire (Fire spells deal 20% more damage)")
   addGameEffect("spirit_crook", "Spirit Bridge (Concentration spells are more effective)")
