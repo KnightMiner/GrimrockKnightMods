@@ -215,14 +215,8 @@ function Champion:die()
         cheatDeath(self, it, slot, self)
         return
       end
-      if it.go.containeritem then
-        for ctSlot, ctIt in it.go.containeritem:contents() do
-          if ctIt.go.arch.name == "crystal_shard_healing" then
-            cheatDeath(self, ctIt, ctSlot, it.go.containeritem)
-            return
-          end
-        end
-      end
+      -- no death cheat from containers in inventory,
+      -- gives an easy way to "toggle" the ability so you don't accidently waste it
     end
   end
   oldChampionDie(self)
