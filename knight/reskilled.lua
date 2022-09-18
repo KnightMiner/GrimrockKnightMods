@@ -47,6 +47,13 @@ local function defineTraits()
     description = "Heavy weapon special attacks charge up 25% faster.",
     -- hardcoded skill
   }
+  defineTrait{
+    name = "km_sniper",
+    uiName = "Sniper",
+    icon = 17,
+    description = "Bows and crossbows deal triple damage against far away targets.",
+    -- hardcoded skill
+  }
 
   --[[ Magic novices ]]--
   defineTrait{
@@ -145,15 +152,6 @@ local function defineTraits()
   		if level > 0 then
   			champion:addStatModifier("food_rate", -15)
   		end
-  	end,
-  }
-  defineTrait{
-  	name = "km_quick_shot",
-  	uiName = "Quick Shot",
-  	icon = 17,
-  	description = "Cooldown of missile attacks is reduced by 10%.",
-  	onComputeCooldown = function(champion, weapon, attack, attackType, level)
-  		if level > 0 and attackType == "missile" then return 0.9 end
   	end,
   }
 
@@ -321,8 +319,8 @@ local function modifySkills()
   -- throwing: replaces double throw with dual wielding
   skill = dungeon.skills["missile_weapons"]
   if skill then
-    skill.traits[5] = "km_quick_shot"
-    skill.description = skill.description .. " At 5th level, reduces cooldown for Missile Weapons by 10%."
+    skill.traits[5] = "km_sniper"
+    skill.description = skill.description .. " At 5th level, bows and crossbows deal triple damage to far away targets."
   end
 
   -- heavy - dual wielding
@@ -622,6 +620,34 @@ function KnightMods.modifyAttackStats(champion, weapon, attack, power, mod)
   return power, mod
 end
 
+-- store the projectile origin after throwing
+local oldItemComponentThrow = ItemComponent.throw
+function ItemComponent:throw(caster, origin, direction, power, gravity, velocityUp)
+  oldItemComponentThrow(self, caster, origin, direction, power, gravity, velocityUp)
+  self.go.thrownFromX = self.go.x
+  self.go.thrownFromY = self.go.y
+end
+
+-- Allows modifying the amount of damage done by a projectile before hit
+KnightMods:enableIntrusiveHook("modifyProjectileDamage")
+local oldModifyProjectileDamage = KnightMods.modifyProjectileDamage
+function KnightMods.modifyProjectileDamage(item, target, dmg, crit, directTarget)
+  local dmg, msg = oldModifyProjectileDamage(item, target, dmg, crit, directTarget)
+
+  if item.thrownByChampion and item.go.thrownFromX and item.go.thrownFromY then
+    -- we want this working on just missile, but that is quite difficult to determine at this point
+    -- as a simplification, limit to arrows as you cannot throw those
+    local type = item.go.ammoitem and item.go.ammoitem.ammoType
+		local champ = party:getChampionByOrdinal(item.thrownByChampion)
+    local dist = math.abs(target.x - item.go.thrownFromX) + math.abs(target.y - item.go.thrownFromY)
+    if dist > 3 and (type == "arrow" or type == "quarrel") and champ:hasTrait("km_sniper") then
+      return dmg * 3, "Sniper"
+    end
+  end
+
+  return dmg, msg
+end
+
 -- finds ammo slot index, returns size and slot if found
 local findAmmo = nil
 if KnightMods:getConfig("reskilled_firearm_one_handed", true) then
@@ -907,6 +933,7 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
       ch:removeTrait("km_gardener")
       ch:removeTrait("km_heavy_dual_wield")
       ch:removeTrait("km_stronger_dual_wielding")
+      ch:removeTrait("km_quick_shot")
 
       if KnightMods:isModLoaded("The Guardians") then
         local alchemy = ch:getNaturalSkillLevel("alchemy")
@@ -921,6 +948,10 @@ function KnightMods.updateSaveData(oldVersion, newVersion)
       local accuracy = ch:getNaturalSkillLevel("accuracy")
       if accuracy >= 3 then
         ch:addTrait("km_heavy_specialist")
+      end
+      local missile = ch:getNaturalSkillLevel("missile_weapons")
+      if missile >= 5 then
+        ch:addTrait("km_sniper")
       end
     end
   end

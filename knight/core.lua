@@ -230,6 +230,11 @@ function KnightMods.modifySpellCooldown(caster, spell, cooldown)
   return cooldown
 end
 
+-- Allows modifying the amount of damage done by a projectile before hit
+function KnightMods.modifyProjectileDamage(item, target, damage, directTarget)
+  return damage, nil
+end
+
 -- Function to redefine an object by name
 function KnightMods.redefineName(name)
   local arch = dungeon.archs[name]

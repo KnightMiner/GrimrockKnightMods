@@ -225,37 +225,116 @@ end
 --[[
   Make protection and dodge work on ranged attacks
 ]]
-if KnightMods:_isIntrusiveHookEnabled("rangedProtectionEvasion") then
-  local oldProjectileHitEntity = ItemComponent.projectileHitEntity
+if KnightMods:_isIntrusiveHookEnabled("modifyProjectileDamage") then
   function ItemComponent:projectileHitEntity(target)
-    if target.party then
-      -- compute damage
-      local dmg = self.projectileDamage or math.random(1,3)
-      local damageType = self.projectileDamageType or "physical"
-      local pierce = self.projectilePierce or 0
-      local accuracy = self.projectileAccuracy or 0
-      local critChance = self.projectileCritChance or 5
+    -- compute damage
+    local dmg = self.projectileDamage or math.random(1,3)
+    local damageType = self.projectileDamageType or "physical"
+    local pierce = self.projectilePierce or 0
+    local accuracy = self.projectileAccuracy or 0
+    local critChance = self.projectileCritChance or 5
 
-      -- crits & fumbles
-      local crit = false
-      if math.random() < critChance/100 then
-        -- crit
-        --print("crit!")
-        dmg = dmg * 2
-        crit = true
-      elseif math.random() < 0.1 then
-        -- fumble
-        --print("fumble!")
-        dmg = math.floor(dmg / 2)
+    --print(dmg, accuracy, critChance)
+
+    local thrownByChampion
+    if self.thrownByChampion then
+      thrownByChampion = party:getChampionByOrdinal(self.thrownByChampion)
+    end
+
+    -- crits & fumbles
+    local crit = false
+    if math.random() < critChance/100 then
+      -- crit
+      --print("crit!")
+      dmg = dmg * 2
+      crit = true
+    elseif math.random() < 0.1 then
+      -- fumble
+      --print("fumble!")
+      dmg = math.floor(dmg / 2)
+    end
+
+    if target.monster then
+      local heading = nil
+      dmg, heading = KnightMods.modifyProjectileDamage(self, target, dmg, target.monster)
+
+      -- if damage is canceled (parity)
+      if dmg == false then
+        target:showDamageText("miss", Color.Grey)
+        if thrownByChampion then
+          thrownByChampion.luck = math.min(thrownByChampion.luck + 3, 15)
+        end
+        self.go:playSound("impact_blunt")
+        return "miss"
       end
 
+      -- evasion
+      local target = target.monster
+      if not target:hasCondition("sleep") and not target:hasCondition("frozen") then
+        local tohit = 60 + accuracy - (target.evasion or 0)
+        if thrownByChampion then tohit = tohit + thrownByChampion.luck end
+        --print("tohit = "..tohit)
+        tohit = math.clamp(tohit, 5, 95)
+        if math.random() > tohit / 100 or target.evasion >= 1000 then
+          target:showDamageText("miss", Color.Grey)
+          if thrownByChampion then
+            thrownByChampion.luck = math.min(thrownByChampion.luck + 3, 15)
+          end
+          self.go:playSound("impact_blunt")
+          return "miss"
+        end
+
+        if thrownByChampion then thrownByChampion.luck = 0 end
+      end
+
+      -- damage reduction
+      local protection = math.max(target:getProtection() - pierce, 0)
+      if protection > 0 then dmg = computeDamageReduction(dmg, protection) end
+
+      -- hit monster
+      local side = "front_left" -- TODO: compute side
+      local impactPos = target:findImpactPosition(self.go:getWorldPosition())
+      local damageFlags = DamageFlags.Impact
+      if crit and not heading then heading = "Critical" end
+      if self.thrownByChampion then damageFlags = damageFlags + bit.lshift(DamageFlags.Champion1, self.thrownByChampion-1) end
+
+      if target:callHook("onProjectileHit", objectToProxy(self), dmg, damageType) == false then return end
+
+      target:damage(dmg, side, damageFlags, damageType, impactPos, heading)
+
+      self:callHook("onThrowAttackHitMonster", objectToProxy(target))
+
+      -- stick projectile into monster
+      if target:isAlive() then
+        local sharp = self:getItemFlag(ItemFlag.SharpProjectile)
+        local fragile = self:getItemFlag(ItemFlag.FragileProjectile)
+
+        if self.projectileDamage and sharp and not fragile then
+          self.go.map:removeEntity(self.go)
+          if self.convertToItemOnImpact then self.convertItem = true end
+          target:addItem(self)
+        end
+      end
+
+      if not target:isAlive() and self:hasTrait("leg_armor") then
+        steamContext:unlockAchievement("full_monty")
+      end
+    elseif target.obstacle then
+      dmg = KnightMods.modifyProjectileDamage(self, target, dmg)
+      -- hit obstacle
+      if dmg ~= false then
+        target:sendMessage("onDamage", dmg)
+        target.obstacle:playHitEffects()
+      end
+    elseif target.party then
       -- hit party
+      local origTarget = target
       local target = party:getAttackTarget((self.go.facing+2) % 4, math.random(0,1))
       if target then
-        -- chance to dodge
-        -- assuming accuracy of 35
-        local tohit = math.clamp(95 - (target:getEvasion() or 0), 5, 95)
-        if math.random() > tohit / 100 then
+        dmg = KnightMods.modifyProjectileDamage(self, origTarget, dmg, target)
+
+        -- if damage is canceled (evasion) skip
+        if dmg == false then
           soundSystem:playSound2D("impact_blunt")
           return
         end
@@ -266,32 +345,9 @@ if KnightMods:_isIntrusiveHookEnabled("rangedProtectionEvasion") then
           end
         end
 
-        -- choose body part to attack (chest 31%, head 22%, legs 25%, feet 22%)
-        local r = math.random(1, 100)
-        local bodySlot
-        if r <= 31 then
-          bodySlot = ItemSlot.Chest
-        elseif r <= 31+22 then
-          bodySlot = ItemSlot.Head
-        elseif r <= 31+22+25 then
-          bodySlot = ItemSlot.Legs
-        else
-          bodySlot = ItemSlot.Feet
-        end
-
-        -- damage reduction
-        local protection = target:getProtectionForBodyPart(bodySlot)
-        if pierce then protection = math.max(protection - pierce, 0) end
-        -- prevent protection from being too good, by only reducing half of prot
-        -- since most monsters are probably balanced around 0 prot
-        if protection > 0 then dmg = computeDamageReduction(dmg, protection / 2) end
-        dmg = math.floor(dmg)
-
         soundSystem:playSound2D("projectile_hit_party")
         party:wakeUp(true)
-        if dmg > 0 then
-          target:damage(dmg, damageType)
-        end
+        target:damage(dmg, damageType)
 
         -- HACK: hard code medusa arrow, 20% chance to petrify
         if self.go.arch.name == "petrifying_arrow" then
@@ -303,8 +359,6 @@ if KnightMods:_isIntrusiveHookEnabled("rangedProtectionEvasion") then
 
         if target:isAlive() then target:playDamageSound() end
       end
-    else
-      return oldProjectileHitEntity(self, target)
     end
   end
 end
