@@ -175,19 +175,19 @@ local function missileBombs()
     local bombDef = dungeon.archs[bomb]
     if bombDef then
       bombDef.components[#bombDef.components+1] = {
-  			class = "AmmoItem",
+        class = "AmmoItem",
         name = "ammoitem",
-  			ammoType = "rock",
-  		}
+        ammoType = "rock",
+      }
     end
   end
 end
 
 local function brewBullets()
   defineRecipe{
-  	potion = "pellet_box",
-  	level = 3,
-  	ingredients = 5,
+    potion = "pellet_box",
+    level = 3,
+    ingredients = 5,
   }
 end
 
@@ -265,7 +265,7 @@ function CraftPotionComponent:brewPotion(champion)
 
   -- gain exp
   -- if champion:getClass() == "alchemist" then
-  -- 	champion:gainExp((recipe.level or 0) * 25)
+  --   champion:gainExp((recipe.level or 0) * 25)
   -- end
 
   soundSystem:playSound2D("brew_potion")

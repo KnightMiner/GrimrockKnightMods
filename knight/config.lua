@@ -21,7 +21,7 @@ KnightMods.config = {
     -- grants +3 to most stats, +2 to willpower
     "km_toorum_stats",
     -- double attack speed
-		"km_thunderstruck",
+    "km_thunderstruck",
 
     -- grants an extra skill point every other level
     "km_perspicacious",
@@ -29,9 +29,9 @@ KnightMods.config = {
     --"km_skill_crystals",
 
     -- resurrection potions work when alive to heal and remove most status effects
-	  "km_unresurrectable",
+    "km_unresurrectable",
     -- healing crystal shards let you cheat death
-		"km_death_cheat",
+    "km_death_cheat",
     -- medusa will no longer petrify, curse instead
     "km_medusa_curse",
   },

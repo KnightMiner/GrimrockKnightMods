@@ -252,42 +252,42 @@ end
 
 -- Function to redefine an object by name
 function KnightMods.renameObjects(map)
-	-- redefine items in levels
-	for i=1,#dungeon.maps do
-		local map = dungeon.maps[i]
-		for e in map:allEntities() do
+  -- redefine items in levels
+  for i=1,#dungeon.maps do
+    local map = dungeon.maps[i]
+    for e in map:allEntities() do
       renameObject(e.arch, map)
 
-			-- items inside other items
-			if e.containeritem then
-				for _,it in e.containeritem:contents() do
+      -- items inside other items
+      if e.containeritem then
+        for _,it in e.containeritem:contents() do
           renameObject(it.go.arch, map)
-				end
-			end
+        end
+      end
 
-			-- items carried by monsters
-			if e.monster then
-				for _,it in e.monster:contents() do
+      -- items carried by monsters
+      if e.monster then
+        for _,it in e.monster:contents() do
           renameObject(it.go.arch, map)
-				end
-			end
-		end
-	end
+        end
+      end
+    end
+  end
 
-	-- redefine items carried by champions
-	if party then
-		for i=1,4 do
-			local champion = party.champions[i]
-			for _,it in champion:carriedItems() do
+  -- redefine items carried by champions
+  if party then
+    for i=1,4 do
+      local champion = party.champions[i]
+      for _,it in champion:carriedItems() do
         renameObject(it.go.arch, map)
-				if it.go.containeritem then
-					for _,it in it.go.containeritem:contents() do
+        if it.go.containeritem then
+          for _,it in it.go.containeritem:contents() do
             renameObject(it.go.arch, map)
-					end
-				end
-			end
-		end
-	end
+          end
+        end
+      end
+    end
+  end
 end
 
 -- called on game load to update save data
@@ -298,7 +298,7 @@ end
 -- add trait to partys with a single Toorum champion
 local oldNewGame = GameMode.newGame
 function GameMode:newGame()
-	oldNewGame(self)
+  oldNewGame(self)
   -- no need to migrate from the first version
   _G.party.__km_save_data_version = SAVE_DATA_VERSION
 end
@@ -314,11 +314,10 @@ function GameMode:loadGame(filename)
       systemLog:write(string.format("KnightMods: migrating from save data version %d to %d", oldVersion, SAVE_DATA_VERSION))
       KnightMods.updateSaveData(oldVersion, SAVE_DATA_VERSION)
       _G.party.__km_save_data_version = SAVE_DATA_VERSION
-    	systemLog:write(string.format("KnightMods: migration from %d to %d successful", oldVersion, SAVE_DATA_VERSION))
+      systemLog:write(string.format("KnightMods: migration from %d to %d successful", oldVersion, SAVE_DATA_VERSION))
     else
      systemLog:write(string.format("KnightMods: skipping migration, already on save data version %d", SAVE_DATA_VERSION))
     end
-
   end
 
   return result

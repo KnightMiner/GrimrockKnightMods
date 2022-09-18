@@ -57,48 +57,48 @@ local function defineTraits()
 
   --[[ Magic novices ]]--
   defineTrait{
-  	name = "km_fire_strength",
-  	uiName = "Strength of Flame",
-  	icon = 60,
-  	description = "The strength of the flames grants +2 strength.",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("strength", 2)
-  		end
-  	end,
+    name = "km_fire_strength",
+    uiName = "Strength of Flame",
+    icon = 60,
+    description = "The strength of the flames grants +2 strength.",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("strength", 2)
+      end
+    end,
   }
   defineTrait{
-  	name = "km_air_dexterity",
-  	uiName = "Agility of Air",
-  	icon = 64,
-  	description = "Knowledge of air grants +2 dexterity",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("dexterity", 2)
-  		end
-  	end,
+    name = "km_air_dexterity",
+    uiName = "Agility of Air",
+    icon = 64,
+    description = "Knowledge of air grants +2 dexterity",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("dexterity", 2)
+      end
+    end,
   }
   defineTrait{
-  	name = "km_earth_vitality",
-  	uiName = "Life of Earth",
-  	icon = 62,
-  	description = "Training in the earth grants +2 vitality",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("vitality", 2)
-  		end
-  	end,
+    name = "km_earth_vitality",
+    uiName = "Life of Earth",
+    icon = 62,
+    description = "Training in the earth grants +2 vitality",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("vitality", 2)
+      end
+    end,
   }
   defineTrait{
-  	name = "km_water_willpower",
-  	uiName = "Energy of the Waves",
-  	icon = 70,
-  	description = "Energy of the waves grants +2 willpower",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("willpower", 2)
-  		end
-  	end,
+    name = "km_water_willpower",
+    uiName = "Energy of the Waves",
+    icon = 70,
+    description = "Energy of the waves grants +2 willpower",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("willpower", 2)
+      end
+    end,
   }
   -- guardians features
   defineTrait{
@@ -114,7 +114,7 @@ local function defineTraits()
   defineTrait{
     name = "km_set_master",
     uiName = "Set Mastery",
-  	icon = KnightMods.skillIcons.set_master,
+    icon = KnightMods.skillIcons.set_master,
     iconAtlas = KnightMods.skillIconAtlas,
     hidden = true,
     description = "Armor sets require 1 fewer pieces for set bonuses",
@@ -138,144 +138,144 @@ local function defineTraits()
   defineTrait{
     name = "km_archmage",
     uiName = "Archmage",
-  	icon = KnightMods.skillIcons.archmage,
+    icon = KnightMods.skillIcons.archmage,
     iconAtlas = KnightMods.skillIconAtlas,
     description = "Spell energy costs are reduced by 20%",
   }
   defineTrait{
-  	name = "km_satiated",
-  	uiName = "Satiated",
-  	icon = KnightMods.skillIcons.satiated,
+    name = "km_satiated",
+    uiName = "Satiated",
+    icon = KnightMods.skillIcons.satiated,
     iconAtlas = KnightMods.skillIconAtlas,
-  	description = "Food consumption rate is decreased by 15%.",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("food_rate", -15)
-  		end
-  	end,
+    description = "Food consumption rate is decreased by 15%.",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("food_rate", -15)
+      end
+    end,
   }
 
   --[[ Character Gen Traits ]]--
   defineTrait{
-  	name = "km_baker",
-  	uiName = "Baker",
-  	icon = KnightMods.skillIcons.baker,
+    name = "km_baker",
+    uiName = "Baker",
+    icon = KnightMods.skillIcons.baker,
     iconAtlas = KnightMods.skillIconAtlas,
-  	charGen = true,
-  	description = "You were a baker in your previous life, making you love eating bread.",
+    charGen = true,
+    description = "You were a baker in your previous life, making you love eating bread.",
   }
   defineTrait{
-  	name = "km_knowledge_keeper",
-  	uiName = "Knowledge Keeper",
-  	icon = KnightMods.skillIcons.knowledge_keeper,
+    name = "km_knowledge_keeper",
+    uiName = "Knowledge Keeper",
+    icon = KnightMods.skillIcons.knowledge_keeper,
     iconAtlas = KnightMods.skillIconAtlas,
-  	charGen = true,
-  	requiredRace = "human",
-  	description = "Willpower +1 for each scroll carried.",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			-- count skulls
-  			local scrolls = 0
-  			for i=1,ItemSlot.MaxSlots do
-  				local item = champion:getItem(i)
-  				if item then
-  					if item:hasTrait("spell_scroll") then
-  						scrolls = scrolls + 1
-  					else
-  						local container = item.go.containeritem
-  						if container then
-  							local capacity = container:getCapacity()
-  							for j=1,capacity do
-  								local item2 = container:getItem(j)
-  								if item2 and item2:hasTrait("spell_scroll") then
-  									scrolls = scrolls + 1
-  								end
-  							end
-  						end
-  					end
-  				end
-  			end
-  			champion:addStatModifier("willpower", scrolls)
-  		end
-  	end,
-  }
-
-  defineTrait{
-  	name = "km_piety",
-  	uiName = "Piety",
-  	icon = 82,
-  	charGen = true,
-  	requiredRace = "insectoid",
-  	description = "Sometimes seeking the arcane comes at the cost of your own well being. Energy regenerates 50% faster, while health regenerates 25% slower.",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			champion:addStatModifier("health_regeneration_rate", -25)
-  			champion:addStatModifier("energy_regeneration_rate", 50)
-  		end
-  	end,
+    charGen = true,
+    requiredRace = "human",
+    description = "Willpower +1 for each scroll carried.",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        -- count skulls
+        local scrolls = 0
+        for i=1,ItemSlot.MaxSlots do
+          local item = champion:getItem(i)
+          if item then
+            if item:hasTrait("spell_scroll") then
+              scrolls = scrolls + 1
+            else
+              local container = item.go.containeritem
+              if container then
+                local capacity = container:getCapacity()
+                for j=1,capacity do
+                  local item2 = container:getItem(j)
+                  if item2 and item2:hasTrait("spell_scroll") then
+                    scrolls = scrolls + 1
+                  end
+                end
+              end
+            end
+          end
+        end
+        champion:addStatModifier("willpower", scrolls)
+      end
+    end,
   }
 
   defineTrait{
-  	name = "km_pirate_training",
-  	uiName = "Pirate Training",
-  	icon = KnightMods.skillIcons.pirate_training,
+    name = "km_piety",
+    uiName = "Piety",
+    icon = 82,
+    charGen = true,
+    requiredRace = "insectoid",
+    description = "Sometimes seeking the arcane comes at the cost of your own well being. Energy regenerates 50% faster, while health regenerates 25% slower.",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        champion:addStatModifier("health_regeneration_rate", -25)
+        champion:addStatModifier("energy_regeneration_rate", 50)
+      end
+    end,
+  }
+
+  defineTrait{
+    name = "km_pirate_training",
+    uiName = "Pirate Training",
+    icon = KnightMods.skillIcons.pirate_training,
     iconAtlas = KnightMods.skillIconAtlas,
-  	charGen = true,
-  	requiredRace = "ratling",
-  	description = "Your years aboard a shipdeck has made you more adept at using various ranged weapons, granting them +15 Accuracy.",
+    charGen = true,
+    requiredRace = "ratling",
+    description = "Your years aboard a shipdeck has made you more adept at using various ranged weapons, granting them +15 Accuracy.",
     onComputeAccuracy = function(champion, weapon, attack, attackType, level)
-  		if level > 0 and (attackType == "missile" or attackType == "throw" or attackType == "firearm") then return 15 end
-  	end,
+      if level > 0 and (attackType == "missile" or attackType == "throw" or attackType == "firearm") then return 15 end
+    end,
   }
 
   defineTrait{
-  	name = "km_rock_skin",
-  	uiName = "Rock Skin",
-  	icon = KnightMods.skillIcons.rock_skin,
+    name = "km_rock_skin",
+    uiName = "Rock Skin",
+    icon = KnightMods.skillIcons.rock_skin,
     iconAtlas = KnightMods.skillIconAtlas,
-  	charGen = true,
-  	requiredRace = "minotaur",
-  	description = "Grants +1 Protection and 1 Resist all for every two rocks carried.",
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			-- count skulls
-  			local rocks = 0
-  			for i=1,ItemSlot.MaxSlots do
-  				local item = champion:getItem(i)
-  				if item then
-  					if item.go.name == "rock" then
-  						rocks = rocks + item:getStackSize()
-  					else
-  						local container = item.go.containeritem
-  						if container then
-  							local capacity = container:getCapacity()
-  							for j=1,capacity do
-  								local item2 = container:getItem(j)
-  								if item2 and item2.go.name == "rock" then
-        						rocks = rocks + item2:getStackSize()
-  								end
-  							end
-  						end
-  					end
-  				end
-  			end
+    charGen = true,
+    requiredRace = "minotaur",
+    description = "Grants +1 Protection and 1 Resist all for every two rocks carried.",
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        -- count skulls
+        local rocks = 0
+        for i=1,ItemSlot.MaxSlots do
+          local item = champion:getItem(i)
+          if item then
+            if item.go.name == "rock" then
+              rocks = rocks + item:getStackSize()
+            else
+              local container = item.go.containeritem
+              if container then
+                local capacity = container:getCapacity()
+                for j=1,capacity do
+                  local item2 = container:getItem(j)
+                  if item2 and item2.go.name == "rock" then
+                    rocks = rocks + item2:getStackSize()
+                  end
+                end
+              end
+            end
+          end
+        end
         local count = math.floor(rocks / 2)
-  			champion:addStatModifier("protection", count)
-  			champion:addStatModifier("resist_fire", count)
-  			champion:addStatModifier("resist_cold", count)
-  			champion:addStatModifier("resist_poison", count)
-  			champion:addStatModifier("resist_shock", count)
-  		end
-  	end,
+        champion:addStatModifier("protection", count)
+        champion:addStatModifier("resist_fire", count)
+        champion:addStatModifier("resist_cold", count)
+        champion:addStatModifier("resist_poison", count)
+        champion:addStatModifier("resist_shock", count)
+      end
+    end,
   }
   defineTrait{
-  	name = "km_refined_palate",
-  	uiName = "Refined Palate",
-  	icon = KnightMods.skillIcons.refined_palette,
+    name = "km_refined_palate",
+    uiName = "Refined Palate",
+    icon = KnightMods.skillIcons.refined_palette,
     iconAtlas = KnightMods.skillIconAtlas,
-  	charGen = true,
-  	requiredRace = "ratling",
-  	description = "Unlike your fellow Ratlings, you appreciate the unique flavor of the food you eat. Gain +3 health for every unique food eaten.",
+    charGen = true,
+    requiredRace = "ratling",
+    description = "Unlike your fellow Ratlings, you appreciate the unique flavor of the food you eat. Gain +3 health for every unique food eaten.",
   }
 
   -- TODO: 2 more global traits?
@@ -416,27 +416,27 @@ end
 local function defineClasses()
   -- ranger: dex version of barbarian
   defineCharClass{
-  	name = "km_ranger",
-  	uiName = "Ranger",
-  	optionalTraits = 2,
+    name = "km_ranger",
+    uiName = "Ranger",
+    optionalTraits = 2,
   }
   defineTrait{
-  	name = "km_ranger",
-  	uiName = "Ranger",
-  	icon = KnightMods.skillIcons.ranger,
+    name = "km_ranger",
+    uiName = "Ranger",
+    icon = KnightMods.skillIcons.ranger,
     iconAtlas = KnightMods.skillIconAtlas,
-  	description = "As a ranger, you specialize in blending in with your surroundings and striking without being seen.",
-  	gameEffect = [[
-  	- Health 55 (+7 per level), Energy 35 (+4 per level)
-  	- Dexterity +1 per level.]],
-  	onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			level = champion:getLevel()
-  			champion:addStatModifier("dexterity", level)
-  			champion:addStatModifier("max_health", 60 + (level-1) * 6)
-  			champion:addStatModifier("max_energy", 30 + (level-1) * 4)
-  		end
-  	end,
+    description = "As a ranger, you specialize in blending in with your surroundings and striking without being seen.",
+    gameEffect = [[
+    - Health 55 (+7 per level), Energy 35 (+4 per level)
+    - Dexterity +1 per level.]],
+    onRecomputeStats = function(champion, level)
+      if level > 0 then
+        level = champion:getLevel()
+        champion:addStatModifier("dexterity", level)
+        champion:addStatModifier("max_health", 60 + (level-1) * 6)
+        champion:addStatModifier("max_energy", 30 + (level-1) * 4)
+      end
+    end,
   }
 end
 
@@ -478,12 +478,12 @@ local function modifyClasses()
     - Special attacks with melee weapons take half the time to build up and cost 25% less energy.
     - Accuracy +1 per level.]]
     trait.onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			level = champion:getLevel()
-  			champion:addStatModifier("max_health", 60 + (level-1) * 7)
-  			champion:addStatModifier("max_energy", 30 + (level-1) * 4)
-  		end
-  	end
+      if level > 0 then
+        level = champion:getLevel()
+        champion:addStatModifier("max_health", 60 + (level-1) * 7)
+        champion:addStatModifier("max_energy", 30 + (level-1) * 4)
+      end
+    end
     trait.onComputeAccuracy = function(champion, weapon, attack, attackType, level)
       if level > 0 then return champion:getLevel() end
     end
@@ -494,16 +494,16 @@ local function modifyClasses()
   trait = dungeon.traits["barbarian"]
   if trait then
     trait.gameEffect = [[
-  	- Health 70 (+9 per level), Energy 30 (+2 per level)
-  	- Strength +1 per level.]]
-  	trait.onRecomputeStats = function(champion, level)
-  		if level > 0 then
-  			level = champion:getLevel()
-  			champion:addStatModifier("strength", level)
-  			champion:addStatModifier("max_health", 75 + (level-1) * 9)
-  			champion:addStatModifier("max_energy", 30 + (level-1) * 3)
-  		end
-  	end
+    - Health 70 (+9 per level), Energy 30 (+2 per level)
+    - Strength +1 per level.]]
+    trait.onRecomputeStats = function(champion, level)
+      if level > 0 then
+        level = champion:getLevel()
+        champion:addStatModifier("strength", level)
+        champion:addStatModifier("max_health", 75 + (level-1) * 9)
+        champion:addStatModifier("max_energy", 30 + (level-1) * 3)
+      end
+    end
   end
 
   -- wizard: 35% chance to not use charges
@@ -521,8 +521,8 @@ local function modifyClasses()
   if trait then
     trait.gameEffect = trait.gameEffect .. '\n- +1% chance per level to score a critical hit with firearms.'
     trait.onComputeCritChance = function(champion, weapon, attack, attackType, level)
-  		if level > 0 and attackType == "firearm" then return champion:getLevel() end
-  	end
+      if level > 0 and attackType == "firearm" then return champion:getLevel() end
+    end
   end
 
 end
@@ -576,8 +576,8 @@ function Champion:isDualWielding()
 
   -- if we have either of our traits, need to override logic
   if self:hasTrait("km_firearm_dual_wield") or self:hasTrait("km_throwing_dual_wield") then
-		local weapon1 = self:getItem(ItemSlot.Weapon)
-		local weapon2 = self:getItem(ItemSlot.OffHand)
+    local weapon1 = self:getItem(ItemSlot.Weapon)
+    local weapon2 = self:getItem(ItemSlot.OffHand)
     if weapon1 and weapon2 and canDualWield(self, weapon1) and canDualWield(self, weapon2) then
       -- melee weapon rules: must either have a dagger in one hand, or have the improved light weapon dual wielding
       if weapon1:hasTrait("light_weapon") and weapon2:hasTrait("light_weapon") then
@@ -611,10 +611,10 @@ function KnightMods.modifyAttackStats(champion, weapon, attack, power, mod)
       end
     end
 
-  	-- firearms: +20% damage per level
-  	if weapon and attack:getAttackType() == "firearm" and KnightMods:isEnabledInMod("reskilled_firearms_whitelist", true) then
-  		power = power * (1 + champion:getSkillLevel("firearms") * 0.20)
-  	end
+    -- firearms: +20% damage per level
+    if weapon and attack:getAttackType() == "firearm" and KnightMods:isEnabledInMod("reskilled_firearms_whitelist", true) then
+      power = power * (1 + champion:getSkillLevel("firearms") * 0.20)
+    end
   end
 
   return power, mod
@@ -638,7 +638,7 @@ function KnightMods.modifyProjectileDamage(item, target, dmg, crit, directTarget
     -- we want this working on just missile, but that is quite difficult to determine at this point
     -- as a simplification, limit to arrows as you cannot throw those
     local type = item.go.ammoitem and item.go.ammoitem.ammoType
-		local champ = party:getChampionByOrdinal(item.thrownByChampion)
+    local champ = party:getChampionByOrdinal(item.thrownByChampion)
     local dist = math.abs(target.x - item.go.thrownFromX) + math.abs(target.y - item.go.thrownFromY)
     if dist > 3 and (type == "arrow" or type == "quarrel") and champ:hasTrait("km_sniper") then
       return dmg * 3, "Sniper"
@@ -654,48 +654,48 @@ if KnightMods:getConfig("reskilled_firearm_one_handed", true) then
   findAmmo = function(champion, ammoType)
     for i=1,ItemSlot.MaxSlots do
       local ammo = champion:getItem(i)
-    	if ammo then ammo = ammo.go.ammoitem end
-    	if ammo and ammoType == ammo:getAmmoType() then
-    		return i, ammo.go.item.count or 1
-    	end
+      if ammo then ammo = ammo.go.ammoitem end
+      if ammo and ammoType == ammo:getAmmoType() then
+        return i, ammo.go.item.count or 1
+      end
     end
     return nil, 0
   end
 
   -- have guns pull ammo from anywhere in the inventory
   function FirearmAttackComponent:checkAmmo(champion, slot)
-  	if self.clipSize then
-  		return self.loadedCount or 0
-  	end
+    if self.clipSize then
+      return self.loadedCount or 0
+    end
     -- search anywhere in inventory for ammo
     local slot, count = findAmmo(champion, self.ammo)
     return count
   end
 
   function FirearmAttackComponent:consumeAmmo(champion, handSlot, count)
-  	count = count or 1
+    count = count or 1
 
     local slot = findAmmo(champion, self.ammo)
     if not slot then
-  		champion:showAttackResult("No ammo")
-  		return 0
+      champion:showAttackResult("No ammo")
+      return 0
     end
-  	local ammo = champion:getItem(slot)
-  	if ammo then ammo = ammo.go.ammoitem end
+    local ammo = champion:getItem(slot)
+    if ammo then ammo = ammo.go.ammoitem end
     -- technically redundant, but safety is good
-  	if not ammo or self.ammo ~= ammo:getAmmoType() then
-  		champion:showAttackResult("No ammo")
-  		return 0
-  	end
+    if not ammo or self.ammo ~= ammo:getAmmoType() then
+      champion:showAttackResult("No ammo")
+      return 0
+    end
 
-  	count = math.min(count, ammo.go.item.count)
-  	ammo.go.item.count = ammo.go.item.count - count
+    count = math.min(count, ammo.go.item.count)
+    ammo.go.item.count = ammo.go.item.count - count
 
-  	if ammo.go.item.count == 0 then
-  		champion:removeItemFromSlot(slot)
-  	end
+    if ammo.go.item.count == 0 then
+      champion:removeItemFromSlot(slot)
+    end
 
-  	return count
+    return count
   end
 end
 
@@ -754,12 +754,12 @@ end
 local oldEquipmentRecomputeStats = EquipmentItemComponent.recomputeStats
 function EquipmentItemComponent:recomputeStats(champion, slot)
   if not self.enabled then return end
-	if self.evasion and self.evasion > 0 and champion:hasTrait("km_stealth") and self:isEquipped(champion, slot) then
+  if self.evasion and self.evasion > 0 and champion:hasTrait("km_stealth") and self:isEquipped(champion, slot) then
     if self.go.item:hasTrait("cloak") then
       champion.stats.evasion.current = champion.stats.evasion.current + self.evasion
     end
     if self.go.item:hasTrait("shield") then
-			champion.stats.evasion.current = champion.stats.evasion.current + self.evasion/2
+      champion.stats.evasion.current = champion.stats.evasion.current + self.evasion/2
     end
   end
   oldEquipmentRecomputeStats(self, champion, slot)
@@ -815,7 +815,7 @@ function UsableItemComponent:onUseItem(champion)
       set[name] = true
       champion:modifyBaseStat("max_health", 3)
       champion:modifyBaseStat("health", 3)
-    	gui:hudPrint(string.format("%s discovered a new food, +3 health!", champion.name))
+      gui:hudPrint(string.format("%s discovered a new food, +3 health!", champion.name))
       soundSystem:playSound2D(champion:getRace().."_happy")
     end
   end
