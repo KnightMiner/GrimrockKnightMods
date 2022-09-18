@@ -223,7 +223,7 @@ if KnightMods:_isIntrusiveHookEnabled("fixMeteorStorm") then
 end
 
 -- boost darkbolt damage based on concentration skill
-if KnightMods._isIntrusiveHookEnabled("darkboltDamage") then
+if KnightMods:_isIntrusiveHookEnabled("darkboltDamage") then
   function BuiltInSpell.darkbolt(caster, x, y, direction, elevation, skill)
     --soundSystem:playSound2D("generic_spell")
     local spell = spawn(party.go.map, "dark_bolt", x, y, direction, elevation)
