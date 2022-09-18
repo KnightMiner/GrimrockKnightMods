@@ -96,10 +96,10 @@ local function moreSetBonusesInit()
       name = "embalmers_robe",
       set = "embalmers",
       total = 4,
-      gameEffect = "Set Bonus: +50 Health",
+      gameEffect = "Set Bonus: +25 Health",
       setBonus = function(self, champion)
         if champion:isArmorSetEquipped("embalmers") then
-          champion:addStatModifier("max_health", 50)
+          champion:addStatModifier("max_health", 25)
         end
       end,
     }
