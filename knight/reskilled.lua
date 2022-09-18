@@ -887,7 +887,7 @@ function UsableItemComponent:onUseItem(champion)
   local name = self.go.arch.name
   local success, empty = oldOnConsumeFood(self, champion)
   if success then
-    if champion:hasTrait("km_baker") and (name == "bread" or name == "pitroot_bread") then
+    if champion:hasTrait("km_baker") and (name == "bread" or name == "pitroot_bread" or name == "dm_food_bread") then
       consumePreferredFood(champion)
     end
   end

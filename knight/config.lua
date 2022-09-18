@@ -1,7 +1,7 @@
 KnightMods.config = {
   -- for general content changes, require one of these mods to be enabled to load any conditional content
   -- for all mod configs, content is always loaded in the vanilla dungeon
-  global_mod_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"},
+  global_mod_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians", "Artifacts of Might"},
 
 
   -----------------
@@ -42,10 +42,10 @@ KnightMods.config = {
   ---------------
 
   -- list of mods to support
-  reskilled_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"}, -- TODO: look at skills
+  reskilled_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians", "Artifacts of Might"}, -- TODO: look at skills
 
   -- list of mods to support firearms dealing extra damage per level
-  reskilled_firearms_whitelist = {"Lost City", "Grimrock Unlimited"}, -- TODO: look at skills
+  reskilled_firearms_whitelist = {"Lost City", "Grimrock Unlimited", "Artifacts of Might"}, -- TODO: look at skills
 
   -- If true, allows dual wielding throwing weapons. At 5th level, there is no penalty for dual wielding throwing weapons
   reskilled_replace_double_throw = true,
@@ -62,15 +62,15 @@ KnightMods.config = {
   more_spells_blacklist = {},
 
   -- list of mods to accept for set bonuses
-  set_bonuses_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"},
+  set_bonuses_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians", "Artifacts of Might"},
 
   -- list of mods to accept for general tweaks that do not have a specific option
-  tweaks_whitelist = {"Lost City", "Grimrock Unlimited"},
+  tweaks_whitelist = {"Lost City", "Grimrock Unlimited", "Artifacts of Might"},
   -- mod blacklist for making the lightning rod use willpower
   tweaks_lightning_rod_willpower_blacklist = {},
   -- brew bullets blacklist
   tweaks_brew_bullets_blacklist = {},
 
   -- list of mods to accept for general tweaks that do not have a specific option
-  tweaks_fix_fire_orb_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians"},
+  tweaks_fix_fire_orb_whitelist = {"Lost City", "Grimrock Unlimited", "The Guardians", "Artifacts of Might"},
 }
