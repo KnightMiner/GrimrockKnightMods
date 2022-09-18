@@ -1,6 +1,9 @@
 -- Misc changes
 KnightMods:_addModule("tweaks", "1.0")
 
+KnightMods:enableIntrusiveHook("fixMeteorStorm")
+KnightMods:enableIntrusiveHook("darkboltDamage")
+
 -- Make wands work with bonus effects
 local oldCastSpell = Spell.castSpell
 function Spell.castSpell(spell, caster, x, y, direction, elevation, skill)

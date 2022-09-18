@@ -222,6 +222,19 @@ if KnightMods:_isIntrusiveHookEnabled("fixMeteorStorm") then
   end
 end
 
+-- boost darkbolt damage based on concentration skill
+if KnightMods._isIntrusiveHookEnabled("darkboltDamage") then
+  function BuiltInSpell.darkbolt(caster, x, y, direction, elevation, skill)
+    --soundSystem:playSound2D("generic_spell")
+    local spell = spawn(party.go.map, "dark_bolt", x, y, direction, elevation)
+    spell:setWorldPosition(Spell.getCasterPositionInWorld(caster))
+    spell.projectile:setAttackPower(10 * (1 + skill*0.2))
+    spell.projectile:setIgnoreEntity(party.go)
+    spell.projectile:setCastByChampion(caster.ordinal)
+    party:endCondition("invisibility")
+  end
+end
+
 --[[
   Make protection and dodge work on ranged attacks
 ]]
