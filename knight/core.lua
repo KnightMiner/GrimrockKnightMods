@@ -157,7 +157,7 @@ end
 
 function KnightMods:isModLoaded(name)
   local mod = modSystem:getCurrentMod()
-  return not mod or mod.name == name
+  return mod and mod.name == name
 end
 
 -- checks if the given key is enabled in the current mods
