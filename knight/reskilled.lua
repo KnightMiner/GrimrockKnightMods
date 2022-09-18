@@ -11,7 +11,7 @@ local function defineTraits()
     uiName = "Dual Firearms",
     icon = KnightMods.skillIcons.firearm_dual_wield,
     iconAtlas = KnightMods.skillIconAtlas,
-    description = "You can attack separately with firearms in either hand. Combines with other types of dual wielding.",
+    description = "You can attack separately with pellet guns in either hand. Combines with other types of dual wielding.",
     -- hardcoded skill
   }
   defineTrait{
@@ -299,11 +299,11 @@ local function modifySkills()
     skill = dungeon.skills["firearms"]
     if skill then
       if KnightMods:isEnabledInMod("reskilled_firearms_whitelist", true) then
-        skill.description = "Increases range of firearm attacks by 1 square and damage by 25% for each skill point. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
+        skill.description = "Increases range of firearm attacks by 1 square and damage by 20% for each skill point. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield pellet guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
       elseif isGuardians then
-        skill.description = "Increases range of firearm attacks by 1 square and critical chance by 2% for each skill point. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
+        skill.description = "Increases range of firearm attacks by 1 square and critical chance by 2% for each skill point. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield pellet guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
       else
-        skill.description = "Increases range of firearm attacks by 1 square. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
+        skill.description = "Increases range of firearm attacks by 1 square. Also decreases the chance of a firearm malfunctioning. At 3rd skill level you can dual wield pellet guns. At 5th skill level you achieve firearm mastery and do not suffer from firearm malfunctions anymore."
       end
       skill.traits[3] = "km_firearm_dual_wield"
     end
@@ -565,7 +565,7 @@ local function canDualWield(champion, weapon)
   if weapon:hasTrait("throwing_weapon") then
     return champion:hasTrait("km_throwing_dual_wield")
   end
-  if weapon:hasTrait("firearm") then
+  if weapon:hasTrait("firearm") and weapon.go.firearmattack.ammo == "pellet" then
     return champion:hasTrait("km_firearm_dual_wield")
   end
   return false
@@ -627,10 +627,9 @@ function KnightMods.modifyAttackStats(champion, weapon, attack, power, mod)
       end
     end
 
-  	-- firearms: +30% damage per level
+  	-- firearms: +20% damage per level
   	if weapon and attack:getAttackType() == "firearm" and KnightMods:isEnabledInMod("reskilled_firearms_whitelist", true) then
-  		power = power * (1 + champion:getSkillLevel("firearms") * 0.25)
-      -- TODO: boost mod based on another skill, e.g. accuracy?
+  		power = power * (1 + champion:getSkillLevel("firearms") * 0.20)
   	end
   end
 
@@ -687,33 +686,17 @@ if KnightMods:getConfig("reskilled_firearm_one_handed", true) then
   end
 end
 
-local function makeTwoHanded(name)
-  local item = dungeon.archs[name]
-  if item then
-    local itemComp = findArchComponentByClass(item, "Item")
-    if itemComp then
-      itemComp.traits = {"firearm", "two_handed"}
-      redefineObject(item)
-    end
-  end
-end
-
 -- make some guns two handed
 local function twoHandedGuns()
   if KnightMods:getConfig("reskilled_firearm_one_handed", true) then
-    makeTwoHanded("repeater")
-    makeTwoHanded("hand_cannon")
-  end
-end
-
--- called on game load to update save data
-local oldUpdateSaveData = KnightMods.updateSaveData
-function KnightMods.updateSaveData(oldVersion, newVersion)
-  oldUpdateSaveData(oldVersion, newVersion)
-
-  if oldVersion < 1 and KnightMods:getConfig("reskilled_firearm_one_handed", true) then
-    KnightMods.redefineName("repeater")
-    KnightMods.redefineName("hand_cannon")
+    local item = dungeon.archs["hand_cannon"]
+    if item then
+      local itemComp = findArchComponentByClass(item, "Item")
+      if itemComp then
+        itemComp.traits = {"firearm", "two_handed"}
+        redefineObject(item)
+      end
+    end
   end
 end
 
@@ -894,16 +877,22 @@ end
 -- called on game load to update save data
 local oldUpdateSaveData = KnightMods.updateSaveData
 function KnightMods.updateSaveData(oldVersion, newVersion)
-  if oldVersion < 2 and KnightMods:isModLoaded("The Guardians") then
-    for i=1,4 do
-      local ch = party.champions[i]
-      if ch:hasTrait("km_gardener") then
-        ch:removeTrait("km_gardener")
-      end
+  if oldVersion < 1 and KnightMods:getConfig("reskilled_firearm_one_handed", true) then
+    KnightMods.redefineName("hand_cannon")
+  end
+  if oldVersion < 2 then
+    KnightMods.redefineName("repeater")
+    if KnightMods:isModLoaded("The Guardians") then
+      for i=1,4 do
+        local ch = party.champions[i]
+        if ch:hasTrait("km_gardener") then
+          ch:removeTrait("km_gardener")
+        end
 
-      local alchemy = ch:getNaturalSkillLevel("alchemy")
-      if alchemy >= 3 then
-        ch:addTrait("km_fullblood")
+        local alchemy = ch:getNaturalSkillLevel("alchemy")
+        if alchemy >= 3 then
+          ch:addTrait("km_fullblood")
+        end
       end
     end
   end
